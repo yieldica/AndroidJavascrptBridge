@@ -44,6 +44,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(project(":jsbridge"))
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidjavascrptbridge)
 }

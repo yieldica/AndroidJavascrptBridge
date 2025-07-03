@@ -1,5 +1,6 @@
 [versions]
 agp = "8.10.1"
+androidjavascrptbridge = "1.0.0"
 kotlin = "2.2.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -15,6 +16,7 @@ cronetEmbedded = "119.6045.31"
 webkit = "1.12.1"
 
 [libraries]
+androidjavascrptbridge = { module = "com.github.yieldica:AndroidJavascrptBridge", version.ref = "androidjavascrptbridge" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

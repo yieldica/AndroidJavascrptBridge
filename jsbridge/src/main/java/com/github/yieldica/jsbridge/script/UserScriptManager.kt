@@ -5,7 +5,6 @@ import android.content.Context
 import android.webkit.WebView
 import androidx.webkit.WebViewFeature
 import com.github.yieldica.jsbridge.script.impl.CompatScriptManager
-//import com.github.yieldica.jsbridge.script.impl.CompatScriptManager
 import com.github.yieldica.jsbridge.script.impl.DocumentStartScriptManager
 
 @SuppressLint("RequiresFeature", "RestrictedApi")
@@ -24,8 +23,7 @@ class UserScriptManager(view: WebView?) : ScriptManager {
     private val supportedDocumentStartScript = WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)
 
     private val scriptManager: ScriptManager = if (supportedDocumentStartScript) {
-//        DocumentStartScriptManager(view)
-        CompatScriptManager(view)
+        DocumentStartScriptManager(view)
     } else {
         CompatScriptManager(view)
     }

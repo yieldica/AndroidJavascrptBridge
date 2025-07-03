@@ -1,5 +1,7 @@
 # AndroidJavascriptBridge
 
+[![](https://jitpack.io/v/yieldica/AndroidJavascrptBridge.svg)](https://jitpack.io/#yieldica/AndroidJavascrptBridge)
+
 An elegant way to send message between `Kotlin` and `WebView`.
 
 You don't need to write any javascript code.
@@ -20,9 +22,10 @@ repositories {
 
 Add dependency
 
+lastVersion: [![](https://jitpack.io/v/yieldica/AndroidJavascrptBridge.svg)](https://jitpack.io/#yieldica/AndroidJavascrptBridge)
 ```kotlin
 dependencies {
-    implementation("com.github.yieldica:jsbridge:1.0.0")
+    implementation("com.github.yieldica:jsbridge:lastVersion")
 }
 ```
 
