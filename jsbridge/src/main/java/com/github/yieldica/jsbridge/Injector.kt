@@ -269,7 +269,7 @@ class Injector(view: WebView) : OnMessageListener {
     }
 
     inline fun <reified T> injectVariable(variableName: String, value: T) {
-        injectScript(variableName, JSON.encodeToString(value))
+        injectScript(variableName, JSON.encodeToString(serializer(), value))
     }
 
     fun injectScript(variableName: String, json: String) {

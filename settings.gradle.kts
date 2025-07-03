@@ -1,6 +1,6 @@
 pluginManagement {
     plugins {
-        kotlin("plugin.serialization") version "2.2.0"
+        kotlin("plugin.serialization") version "2.0.20"
     }
     repositories {
         google {
