@@ -141,6 +141,10 @@ class MainActivity : AppCompatActivity() {
         }
         webView.injector.inject("testSerializableArgs", testSerializableArgs)
 
+        webView.injector.injectVariable("testVariable", "Yieldica")
+        webView.injector.injectScript("testModel", Json.encodeToString(User.serializer(), User("Yieldica", 18, "Yieldica")))
+        webView.injector.injectScript("testJSON", "{ name: 'Yieldica', age: 18, nickname: 'Yieldica' }")
+
         load(webView)
     }
 
@@ -151,9 +155,7 @@ class MainActivity : AppCompatActivity() {
 
 @Serializable
 data class User(
-    var name: String,
-    var age: Int,
-    var nickname: String? = null
+    var name: String, var age: Int, var nickname: String? = null
 )
 
 @Serializable

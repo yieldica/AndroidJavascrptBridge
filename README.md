@@ -40,6 +40,15 @@ dependencies {
 It's very easy to define a javascript function with native code
 
 ```kotlin
+webView.injector.injectVariable("name", "Yieldica")
+// js: name
+webView.injector.injectScript("testModel", Json.encodeToString(User.serializer(), User("Yieldica", 18, "Yieldica")))
+// js: testModel
+webView.injector.injectScript("testJSON", "{ name: 'Yieldica', age: 18, nickname: 'Yieldica' }")
+// js: testJSON
+```
+
+```kotlin
   // simple test
 val testHello: () -> Unit = {
     println("hello")
