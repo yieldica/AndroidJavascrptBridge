@@ -48,11 +48,11 @@ class CompatScriptManager(view: WebView?) : ScriptManager {
 
 
     init {
-        view?.let {
-            it.webViewClient = LocalScriptWebClient(it.webViewClient) {
+        view?.let { webView ->
+            webView.webViewClient = LocalScriptWebClient(WebViewClient()) {
                 WebResourceResponse(MIMETYPE_HTML, null, localScriptManager.handleHtmlSource(it).byteInputStream())
             }
-            it.addJavascriptInterface(this, UserScriptManager.MESSAGE_NAME)
+            webView.addJavascriptInterface(this, UserScriptManager.MESSAGE_NAME)
         }
     }
 
@@ -86,7 +86,7 @@ private class LocalScriptManager(private val compatScriptManager: CompatScriptMa
             return source
         }
 
-        val scriptBuilder = StringBuilder(source.substring(0, index))
+        val scriptBuilder = StringBuilder(source.take(index))
         fun appendScript(path: String, js: String) {
             scriptBuilder.append("<script src=\"/").append(makeRelativePath(path, js)).append("\"></script>\n")
         }
