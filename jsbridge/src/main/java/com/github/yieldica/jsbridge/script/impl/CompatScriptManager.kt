@@ -49,7 +49,7 @@ class CompatScriptManager(view: WebView?) : ScriptManager {
 
     init {
         view?.let { webView ->
-            webView.webViewClient = LocalScriptWebClient(WebViewClient()) {
+            webView.webViewClient = LocalScriptWebClient(webView.webViewClient) {
                 WebResourceResponse(MIMETYPE_HTML, null, localScriptManager.handleHtmlSource(it).byteInputStream())
             }
             webView.addJavascriptInterface(this, UserScriptManager.MESSAGE_NAME)
@@ -117,7 +117,7 @@ private class LocalScriptManager(private val compatScriptManager: CompatScriptMa
     }
 }
 
-internal class LocalScriptWebClient(private val delegate: WebViewClient, private val htmlHandler: (String) -> WebResourceResponse) : WebViewClient() {
+class LocalScriptWebClient(private val delegate: WebViewClient, private val htmlHandler: (String) -> WebResourceResponse) : WebViewClient() {
     override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
         val url = request.url.toString()
         if (url.startsWith(DIR)) {
