@@ -29,7 +29,7 @@ class CompatScriptManager(view: WebView?) : ScriptManager, LocalScriptInjector {
 
 
     init {
-        (view?.webViewClient as? LocalScriptInjectorOwner)?.localScriptInjector = this
+        (view as? LocalScriptInjectorOwner)?.localScriptInjector = this
         view?.addJavascriptInterface(this, UserScriptManager.MESSAGE_NAME)
     }
 
