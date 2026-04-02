@@ -10,6 +10,7 @@ import com.github.yieldica.jsbridge.model.Args2
 import com.github.yieldica.jsbridge.model.Args3
 import com.github.yieldica.jsbridge.model.Args4
 import com.github.yieldica.jsbridge.model.BridgeInfo
+import com.github.yieldica.jsbridge.model.CallAsyncDispatcher
 import com.github.yieldica.jsbridge.model.Callback
 import com.github.yieldica.jsbridge.model.PromiseResult
 import com.github.yieldica.jsbridge.model.PromiseScript
@@ -31,6 +32,8 @@ class Injector(view: WebView) : OnMessageListener {
 
     init {
         userScriptManager.onMessageListener = this
+        // Inject _callAsync helper for Callback.call() async support
+        userScriptManager.inject(CallAsyncDispatcher.INJECT_SCRIPT, "__callAsync__")
     }
 
     val lifecycleScope: LifecycleCoroutineScope?
@@ -40,6 +43,11 @@ class Injector(view: WebView) : OnMessageListener {
     override fun onPostMessage(message: String) {
         val bridgeInfo = JSON.decodeFromString<BridgeInfo>(message)
         if (bridgeInfo.identifier == null || bridgeInfo.args == null) {
+            return
+        }
+
+        if (bridgeInfo.identifier == "__callAsync__") {
+            CallAsyncDispatcher.handleResponse(bridgeInfo.args)
             return
         }
 

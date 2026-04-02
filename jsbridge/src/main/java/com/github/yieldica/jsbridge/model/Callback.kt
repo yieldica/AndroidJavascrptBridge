@@ -3,10 +3,13 @@ package com.github.yieldica.jsbridge.model
 import android.webkit.WebView
 import com.github.yieldica.jsbridge.ktx.JSON
 import com.github.yieldica.jsbridge.ktx.postEvaluateJavascript
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
@@ -59,6 +62,49 @@ class Callback(val id: String) {
             webView.postEvaluateJavascript(source)
         }
     }
+
+    /**
+     * Call the JS callback and await completion (fire-and-forget).
+     * Mirrors iOS: Callback.call(_ args: Encodable...) async throws
+     */
+    suspend fun <T> call(args: List<T>, serializer: KSerializer<T>) {
+        callAsyncInternal(args, serializer)
+    }
+
+    /**
+     * Call the JS callback and await a typed return value.
+     * Mirrors iOS: Callback.call<T: Decodable>(_ args: Encodable...) async throws -> T
+     */
+    suspend fun <T, R> call(args: List<T>, argSerializer: KSerializer<T>, resultSerializer: KSerializer<R>): R {
+        val json = callAsyncInternal(args, argSerializer)
+        if (json == null || json == "null" || json == "undefined") {
+            throw CallAsyncException("JavaScript returned null/undefined")
+        }
+        return JSON.decodeFromString(resultSerializer, json)
+    }
+
+    /**
+     * Uses _callAsync (injected by CallAsyncDispatcher) to execute the JS callback async.
+     * JS resolves the Promise and posts result back via bridge → CallAsyncDispatcher.handleResponse.
+     */
+    private suspend fun <T> callAsyncInternal(args: List<T>, serializer: KSerializer<T>): String? {
+        val wv = webView?.get() ?: throw CallAsyncException("WebView is not available")
+        val requestId = java.util.UUID.randomUUID().toString()
+        val params = args.joinToString(", ") { JSON.encodeToString(serializer, it) }
+        val source = if (params.isNotEmpty()) {
+            "window.__bridge__.CBDispatcher._callAsync('$requestId', '$id', $params)"
+        } else {
+            "window.__bridge__.CBDispatcher._callAsync('$requestId', '$id')"
+        }
+
+        return suspendCancellableCoroutine { cont ->
+            CallAsyncDispatcher.register(requestId, cont)
+            cont.invokeOnCancellation { CallAsyncDispatcher.cancel(requestId) }
+            wv.postEvaluateJavascript(source)
+        }
+    }
+
+    class CallAsyncException(message: String) : Exception(message)
 }
 
 internal class CallbackWithWebViewSerializer(
